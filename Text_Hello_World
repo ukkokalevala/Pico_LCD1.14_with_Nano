@@ -1,0 +1,35 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <SPI.h>
+
+// Pin definitions
+#define TFT_CS     9
+#define TFT_RST    12
+#define TFT_DC     8
+#define TFT_BL     13  // Optional: backlight
+
+// Initialize the display (using the ST7789 driver)
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+void setup() {
+  // Initialize the display
+  tft.init(135, 240);  // 1.14" screen resolution (135x240)
+  tft.setRotation(1);  // Adjust orientation if needed
+
+  // Optional: turn on backlight
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
+
+  // Clear the screen with black
+  tft.fillScreen(ST77XX_BLACK);
+
+  // Display "Hello, World!"
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setTextSize(2);
+  tft.setCursor(10, 50);
+  tft.println("Hello, World!");
+}
+
+void loop() {
+  // Nothing to do here for now
+}
