@@ -1,0 +1,50 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <SPI.h>
+
+// Pin definitions for Raspberry Pi Pico
+#define TFT_CS     10
+#define TFT_RST    8
+#define TFT_DC     9
+#define TFT_BL     7  // Optional: backlight control
+
+// Initialize the ST7789 display with defined pins
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+void setup() {
+  // Initialize the display
+  tft.init(135, 240);  // 1.14" screen resolution
+  tft.setRotation(3);  // Set rotation to 90 degrees
+
+  // Optional: turn on the backlight
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
+
+  // Create a colorful gradient background
+  for (int i = 0; i < 240; i++) {
+    uint16_t color = tft.color565(i, 255 - i, 128);  // Gradient of red and blue
+    tft.drawFastVLine(i, 0, 135, color);
+  }
+
+  // Draw a colorful filled circle
+  tft.fillCircle(60, 60, 30, ST77XX_BLUE);
+  tft.fillCircle(120, 120, 30, ST77XX_GREEN);
+
+  // Draw a rectangle
+  tft.fillRect(10, 100, 50, 25, ST77XX_RED);
+  tft.fillRect(80, 20, 40, 20, ST77XX_YELLOW);
+
+  // Display some colorful text
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setTextSize(2);
+  tft.setCursor(10, 10);
+  tft.println("Colorful!");
+
+  tft.setTextColor(ST77XX_CYAN);
+  tft.setCursor(10, 80);
+  tft.println("Display");
+}
+
+void loop() {
+  // Nothing to do in the loop
+}
