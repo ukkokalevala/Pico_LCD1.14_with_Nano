@@ -1,0 +1,77 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <SPI.h>
+
+// Pin definitions for Raspberry Pi Pico
+#define TFT_CS     10
+#define TFT_RST    8
+#define TFT_DC     9
+#define TFT_BL     7  // Optional: backlight control
+
+// Initialize the ST7789 display with defined pins
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+// Ball structure
+struct Ball {
+  int x, y;         // Position
+  int size;        // Size of the ball
+  int xSpeed, ySpeed; // Speed and direction
+  uint16_t color;  // Color of the ball
+};
+
+// Create two balls
+Ball balls[] = {
+  { 30, 30, 10, 2, 3, ST77XX_BLUE },
+  { 100, 100, 15, -3, 2, ST77XX_GREEN }
+};
+
+void setup() {
+  // Initialize the display
+  tft.init(135, 240);  // 1.14" screen resolution
+  tft.setRotation(3);  // Set rotation to 90 degrees
+
+  // Optional: turn on the backlight
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
+
+  // Draw the initial background gradient
+  drawGradient();
+
+  // Display some colorful text
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setTextSize(2);
+  tft.setCursor(10, 10);
+  tft.println("Bouncing Balls");
+}
+
+void drawGradient() {
+  // Create a colorful gradient background
+  for (int i = 0; i < 240; i++) {
+    uint16_t color = tft.color565(i, 255 - i, 128);  // Gradient of red and blue
+    tft.drawFastVLine(i, 0, 135, color);
+  }
+}
+
+void loop() {
+  // Redraw the background each frame
+  drawGradient();
+
+  // Update ball positions
+  for (int i = 0; i < sizeof(balls) / sizeof(balls[0]); i++) {
+    balls[i].x += balls[i].xSpeed;
+    balls[i].y += balls[i].ySpeed;
+
+    // Check for collision with the edges
+    if (balls[i].x < balls[i].size || balls[i].x > 135 - balls[i].size) {
+      balls[i].xSpeed = -balls[i].xSpeed; // Reverse direction on x-axis
+    }
+    if (balls[i].y < balls[i].size || balls[i].y > 240 - balls[i].size) {
+      balls[i].ySpeed = -balls[i].ySpeed; // Reverse direction on y-axis
+    }
+
+    // Draw the updated ball positions
+    tft.fillCircle(balls[i].x, balls[i].y, balls[i].size, balls[i].color);
+  }
+
+  delay(30); // Control the speed of the animation
+}
